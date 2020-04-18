@@ -163,4 +163,33 @@ public class KnowYourWayScript : MonoBehaviour {
             }
         }
 	}
+    
+    //twitch plays
+#pragma warning disable 414
+    private readonly string TwitchHelpMessage = @"Press the buttons labeled UDLR with !{0} press UDLR.";
+#pragma warning restore 414
+
+    IEnumerator ProcessTwitchCommand(string command)
+    {
+        command = command.Trim().ToLower();
+        if (!command.StartsWith("press ")) yield break;
+
+        string iterator = command.Substring(6);
+        IEnumerable<char> invalid = iterator.Where(x => !x.EqualsAny('u', 'd', 'l', 'r'));
+        if(invalid.Any()) yield break;
+
+        foreach (char character in iterator)
+        {
+            yield return null;
+            for (int i = 0; i < 4; i++)
+            {
+                if (Labels[i].text.ToLower()[0] == character)
+                {
+                    Buttons[i].OnInteract();
+                    yield return new WaitForSeconds(0.1f);
+                    break;
+                }
+            }
+        }
+    }
 }
