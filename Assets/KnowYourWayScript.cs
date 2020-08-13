@@ -139,16 +139,42 @@ public class KnowYourWayScript : MonoBehaviour {
         }
     }
 
-	void ButtonPress (KMSelectable button) {
+    void ButtonPress(KMSelectable button)
+    {
+        if (moduleSolved)
+            return;
         button.AddInteractionPunch();
         GetComponent<KMAudio>().PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, transform);
 
-        for (int i = 0; i < 4; i++) {
-            if (button == Buttons[i]) {
+        for (int i = 0; i < 4; i++)
+        {
+            if (button == Buttons[i])
+            {
                 Input += Directions[(UpperLoc + i) % 4].ToString();
             }
         }
 
+        for (int i = 0; i < Input.Length; i++)
+        {
+            if (Input[i] != Answer[i])
+            {
+                Debug.LogFormat("[Know Your Way #{0}] Incorrect answer (Buttons labeled {1}) submitted, module striked.", moduleId, Input);
+                GetComponent<KMBombModule>().HandleStrike();
+                Input = "";
+                return;
+            }
+        }
+
+        if (Input.Length == 4)
+        {
+            Debug.LogFormat("[Know Your Way #{0}] Correct answer (Buttons labeled {1}) submitted, module solved.", moduleId, Input);
+            GetComponent<KMBombModule>().HandlePass();
+            moduleSolved = true;
+            Center.transform.localPosition = new Vector3(0.0020f, 0.0158f, 0f);
+            Center.text = "✓";
+        }
+
+        /*
         if (Input.Length == 4) {
             if (Input == Answer) {
                 GetComponent<KMBombModule>().HandlePass();
@@ -162,7 +188,8 @@ public class KnowYourWayScript : MonoBehaviour {
                 Input = "";
             }
         }
-	}
+        */
+    }
 
     //twitch plays
 #pragma warning disable 414
