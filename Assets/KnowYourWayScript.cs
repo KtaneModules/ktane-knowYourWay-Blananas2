@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -130,12 +130,12 @@ public class KnowYourWayScript : MonoBehaviour {
 	}
 
     void GenerateAnswer (int a, int b, int c) {
-        switch (((a - b + c - UButtonLoc) + 4) % 4) {
+        switch (((a - b + c - UButtonLoc) + 8) % 4) {
             case 0: Answer += "U"; break;
             case 1: Answer += "L"; break;
             case 2: Answer += "D"; break;
             case 3: Answer += "R"; break;
-            default: break;
+            default: Debug.LogFormat("[Know Your Way #{0}] There was a problem generating the part of the answer after \"{1}\" (Number ended up being {2}), please let Blan know immediately.", moduleId, Answer, ((a - b + c - UButtonLoc) + 8) % 4); break;
         }
     }
 
@@ -163,7 +163,7 @@ public class KnowYourWayScript : MonoBehaviour {
             }
         }
 	}
-    
+
     //twitch plays
 #pragma warning disable 414
     private readonly string TwitchHelpMessage = @"Press the buttons labeled UDLR with !{0} press UDLR.";
