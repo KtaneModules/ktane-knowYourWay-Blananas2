@@ -31,6 +31,7 @@ public class KnowYourWayScript : MonoBehaviour {
     static int moduleIdCounter = 1;
     int moduleId;
     private bool moduleSolved;
+    private bool tpStrikeCheck = false;
 
     void Awake () {
         moduleId = moduleIdCounter++;
@@ -160,6 +161,7 @@ public class KnowYourWayScript : MonoBehaviour {
             {
                 Debug.LogFormat("[Know Your Way #{0}] Incorrect answer (Buttons labeled {1}) submitted, module striked.", moduleId, Input);
                 GetComponent<KMBombModule>().HandleStrike();
+                tpStrikeCheck = !tpStrikeCheck;
                 Input = "";
                 return;
             }
@@ -204,6 +206,7 @@ public class KnowYourWayScript : MonoBehaviour {
         string iterator = command.Substring(6);
         IEnumerable<char> invalid = iterator.Where(x => !x.EqualsAny('u', 'd', 'l', 'r'));
         if(invalid.Any()) yield break;
+        bool startingStrike = tpStrikeCheck;
 
         foreach (char character in iterator)
         {
@@ -213,6 +216,8 @@ public class KnowYourWayScript : MonoBehaviour {
                 if (Labels[i].text.ToLower()[0] == character)
                 {
                     Buttons[i].OnInteract();
+                    if (startingStrike != tpStrikeCheck)
+                        yield break;
                     yield return new WaitForSeconds(0.1f);
                     break;
                 }
