@@ -145,7 +145,7 @@ public class KnowYourWayScript : MonoBehaviour {
         if (moduleSolved)
             return;
         button.AddInteractionPunch();
-        GetComponent<KMAudio>().PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, transform);
+        Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, transform);
 
         for (int i = 0; i < 4; i++)
         {
@@ -160,7 +160,7 @@ public class KnowYourWayScript : MonoBehaviour {
             if (Input[i] != Answer[i])
             {
                 Debug.LogFormat("[Know Your Way #{0}] Incorrect answer (Buttons labeled {1}) submitted, module striked.", moduleId, Input);
-                GetComponent<KMBombModule>().HandleStrike();
+                Module.HandleStrike();
                 tpStrikeCheck = !tpStrikeCheck;
                 Input = "";
                 return;
@@ -170,7 +170,7 @@ public class KnowYourWayScript : MonoBehaviour {
         if (Input.Length == 4)
         {
             Debug.LogFormat("[Know Your Way #{0}] Correct answer (Buttons labeled {1}) submitted, module solved.", moduleId, Input);
-            GetComponent<KMBombModule>().HandlePass();
+            Module.HandlePass();
             moduleSolved = true;
             Center.transform.localPosition = new Vector3(0.0020f, 0.0158f, 0f);
             Center.text = "✓";
@@ -179,13 +179,13 @@ public class KnowYourWayScript : MonoBehaviour {
         /*
         if (Input.Length == 4) {
             if (Input == Answer) {
-                GetComponent<KMBombModule>().HandlePass();
+                Module.HandlePass();
                 moduleSolved = true;
                 Debug.LogFormat("[Know Your Way #{0}] Correct answer (Buttons labeled {1}) submitted, module solved.", moduleId, Input);
                 Center.transform.localPosition = new Vector3(0.0020f, 0.0158f, 0f);
                 Center.text = "✓";
             } else {
-                GetComponent<KMBombModule>().HandleStrike();
+                Module.HandleStrike();
                 Debug.LogFormat("[Know Your Way #{0}] Incorrect answer (Buttons labeled {1}) submitted, module striked.", moduleId, Input);
                 Input = "";
             }
@@ -200,7 +200,7 @@ public class KnowYourWayScript : MonoBehaviour {
 
     IEnumerator ProcessTwitchCommand(string command)
     {
-        command = command.Trim().ToLower();
+        command = command.Trim().ToLowerInvariant();
         if (!command.StartsWith("press ")) yield break;
 
         string iterator = command.Substring(6);
@@ -223,5 +223,15 @@ public class KnowYourWayScript : MonoBehaviour {
                 }
             }
         }
+    }
+
+    private IEnumerator TwitchHandleForcedSolve()
+    {
+        for (int i = Input.Length; i < Answer.Length; i++)
+        {
+            Buttons[(Directions.IndexOf(Answer[i]) + UButtonLoc) % 4].OnInteract();
+            yield return new WaitForSeconds(0.1f);
+        }
+        yield break;
     }
 }
